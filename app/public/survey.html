@@ -15,6 +15,90 @@
         <h1>Friend Finder!</h1>
         <h3>Fill out the survey below to find a friend!</h3>
     </div>
+    <div class="container">
+        <div class="col">
+            <div class="row-fluid">
+                <form>
+                    <div class="form-group">
+                        <label for="userName">
+                            <h3>Name</h3>
+                        </label>
+                        <input type="text" class="form-control" id="userName" name="userName" aria-describedby="nameHelp" placeholder="Enter name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPic">
+                            <h3>Picture URL</h3>
+                        </label>
+                        <input type="text" class="form-control" id="userPic" name="userPic" placeholder="URL to image" required>
+                    </div>
+                    <h3>Questions</h3>
+                    <div class='questionContainer'></div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id='result'>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Found a Friend!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Thanks!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            "I have a vivid imagination",
+            "I worry about things",
+            "I love large parties",
+            "I get angry easily",
+            "I radiate joy.",
+            "I dislike being the center of attention",
+            "I try to follow the rules",
+            "I like music",
+            "I work hard.",
+            "I trust what people say."
+        ];
+
+        $(function() {
+
+            for (x in questions) {
+                $(".questionContainer").append(`
+                <div class="form-group">
+                <label for="question${x}"><h5>${questions[x]}</h5></label>
+                <select class="form-control" id="question${x}" required>
+                <option value="" selected>Please Choose</option>
+                <option value="1">1 (Strongly Disagree)</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10 (Strongly Agree)</option>
+                </select>
+                </div>`)
+            }
+        });
+
+        $("#submit").click(function(e) {
+            e.preventDefault();
+
+        })
+    </script>
 </body>
 
 </html>
