@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Friend Finder!</title>
-    <script src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
     <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous'>
+    <script src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
 
 <body class='mx-5'>
@@ -23,13 +24,13 @@
                         <label for="userName">
                             <h3>Name</h3>
                         </label>
-                        <input type="text" class="form-control" id="name" name="name" aria-describedby="nameHelp" placeholder="Enter name" required>
+                        <input type="text" class="form-control input" id="name" name="name" aria-describedby="nameHelp" placeholder="Enter name" required>
                     </div>
                     <div class="form-group">
                         <label for="userPic">
                             <h3>Picture URL</h3>
                         </label>
-                        <input type="text" class="form-control" id="photo" name="photo" placeholder="URL to image" required>
+                        <input type="text" class="form-control input" id="photo" name="photo" placeholder="URL to image" required>
                     </div>
                     <h3>Questions</h3>
                     <div class='questionContainer'></div>
@@ -43,16 +44,12 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Found a Friend!</h5>
+                    <h5 class="modal-title"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Thanks!</button>
                 </div>
             </div>
         </div>
@@ -60,6 +57,17 @@
     <hr>
     <p><a href="/api/friends">API Friends List</a></p>
     <script>
+        function validateForm() {
+            let isValid = true;
+            $(".input").each(function() {
+                if ($(this).val() === "") {
+                    $(this).attr("style", "border: solid red 1px");
+                    isValid = false;
+                }
+            });
+            return isValid;
+        }
+
         const questions = [
             "I have a vivid imagination",
             "I worry about things",
@@ -79,8 +87,8 @@
                 $(".questionContainer").append(`
                 <div class="form-group">
                 <label for="question${x}"><h5>${questions[x]}</h5></label>
-                <select class="form-control" id="question${x}" required>
-                <option value="" selected>Please Choose</option>
+                <select class="form-control input" id="question${x}" required>
+                <option></option>
                 <option value="1">1 (Strongly Disagree)</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -94,10 +102,29 @@
                 </select>
                 </div>`)
             }
+
+            $(".input").change(function() {
+                $(this).removeAttr("style");
+            })
         });
+
+
+
+        $("#thanks").click(function() {
+            $("#results").trigger('click.dismiss.bs.modal');
+        })
 
         $("#submit").on("click", function(e) {
             e.preventDefault();
+
+            if (validateForm() === false) {
+                $(".modal-title").html("Error!")
+                $(".modal-body").html(`
+                                    <p>You have one or more errors.  Please correct the highlighted issues.</p>
+                                    `);
+                $("#result").modal("show");
+                return;
+            }
             const newFriend = {
                 name: $("#name").val().trim(),
                 photo: $("#photo").val().trim(),
@@ -114,9 +141,15 @@
                     parseInt($("#question9").val())
                 ]
             }
-            console.log(newFriend);
             $.post("/api/friends", newFriend).then(function(res) {
                 console.log(res);
+                $(".input").val("");
+                $(".modal-title").html("Found a Friend!");
+                $(".modal-body").html(`
+                                    <h2>${res.name}</h2>
+                                    <p><img src="${res.photo}" style='width:28em'></p>
+                                    `);
+                $("#result").modal("show");
             })
 
         })
